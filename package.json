@@ -1,0 +1,29 @@
+{
+  "name": "perfumarketv2.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://%3C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%3E@github.com/PMKboutique2025/perfumarket-2.0.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/PMKboutique2025/perfumarket-2.0/issues"
+  },
+  "homepage": "https://github.com/PMKboutique2025/perfumarket-2.0#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {}
+}
