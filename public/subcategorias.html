@@ -1,0 +1,130 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subcategorías | Perfumarket</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #111;
+    }
+
+    .header-subcategorias {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .grid-subcategorias {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .subcat-card {
+      position: relative;
+      width: 260px;
+      height: 340px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-decoration: none;
+      color: white;
+      transition: transform 0.3s ease;
+    }
+
+    .subcat-card:hover {
+      transform: scale(1.03);
+    }
+
+    .subcat-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7);
+    }
+
+    .subcat-card h3 {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    @media (max-width: 768px) {
+      .grid-subcategorias {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .subcat-card {
+        width: 90%;
+        height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="header-subcategorias" id="tituloCategoria">Subcategorías</h1>
+
+  <section class="grid-subcategorias" id="contenedorSubcategorias">
+    <!-- JS insertará aquí las subcategorías -->
+  </section>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoria = urlParams.get('categoria')?.toLowerCase();
+
+    const contenedor = document.getElementById("contenedorSubcategorias");
+    const titulo = document.getElementById("tituloCategoria");
+
+    const subcategoriasPorCategoria = {
+      mujer: [
+        { nombre: "Ropa", imagen: "https://images.unsplash.com/photo-1618354691310-e5c6a2e8a5bb" },
+        { nombre: "Bolsas", imagen: "https://images.unsplash.com/photo-1616348436168-bc258a949c4b" },
+        { nombre: "Zapatos", imagen: "https://images.unsplash.com/photo-1600180758890-1fb0e55f44e7" },
+        { nombre: "Perfumes", imagen: "https://images.unsplash.com/photo-1629217701541-91eb2b6716a9" }
+      ],
+      hombre: [
+        { nombre: "Ropa", imagen: "https://images.unsplash.com/photo-1580234758340-fdfe0c0e2f67" },
+        { nombre: "Zapatos", imagen: "https://images.unsplash.com/photo-1589571894960-20bbe2828c0a" },
+        { nombre: "Accesorios", imagen: "https://images.unsplash.com/photo-1586363146540-4c6715b80d41" },
+        { nombre: "Perfumes", imagen: "https://images.unsplash.com/photo-1600181955080-e009c6be7df0" }
+      ],
+      suplementos: [
+        { nombre: "Proteínas", imagen: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1" },
+        { nombre: "Vitaminas", imagen: "https://images.unsplash.com/photo-1612197525530-6ff5290e7a43" }
+      ]
+    };
+
+    if (categoria && subcategoriasPorCategoria[categoria]) {
+      titulo.textContent = `Subcategorías de ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
+      subcategoriasPorCategoria[categoria].forEach(sub => {
+        const card = document.createElement('a');
+        card.href = `home.html?categoria=${categoria}&subcat=${sub.nombre.toLowerCase()}`;
+        card.classList.add('subcat-card');
+        card.innerHTML = `
+          <img src="${sub.imagen}" alt="${sub.nombre}">
+          <h3>${sub.nombre}</h3>
+        `;
+        contenedor.appendChild(card);
+      });
+    } else {
+      contenedor.innerHTML = "<p>Categoría no válida.</p>";
+    }
+  </script>
+
+</body>
+</html>
