@@ -2,6 +2,8 @@
 const SUPABASE_URL = 'https://lourpqpgiqfyixrvyfuo.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const API_BASE = 'https://perfumarket-backend.onrender.com';
+
 
 // 🧪 Test de conexión
 console.log("Supabase conectado:", supabase);

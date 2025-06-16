@@ -1,122 +1,57 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo | Perfumarket</title>
-  <link rel="stylesheet" href="css/estilos.css">
-  <script type="module" src="js/main.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  const supabase = createClient(
+    'https://lourpqpgiqfyixrvyfuo.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  );
+
+  const lista = document.getElementById("lista-productos");
+
+    // ✅ Leer parámetro desde la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const filtroCategoria = urlParams.get('categoria'); // ej. ?categoria=mujer
+
+  // ✅ Aplicar tema visual según categoría
+  if (filtroCategoria) {
+    document.body.classList.add(`tema-${filtroCategoria.toLowerCase()}`);
+  }
 
 
-</head>
-<body>
-  <header>
-    <div class="logo">Perfumarket</div>
-    <nav>
-      <ul>
-        <li><a href="home.html" class="activo">Inicio</a></li>
-        <li><a href="#">Moda</a></li>
-        <li><a href="#">Calzado</a></li>
-        <li><a href="#">Perfumería</a></li>
-        <li><a href="#">Accesorios</a></li>
-        <li><a href="#">Suplementos</a></li>
-        <li><a href="login.html">Salir</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <main>
-    <section class="productos" id="contenedor-productos">
-      <h2>Catálogo de productos</h2>
-      <div class="grid-productos" id="lista-productos">
-        <!-- Productos se cargan aquí dinámicamente -->
-      </div>
-    </section>
-  </main>
+  async function cargarProductos() {
+    let query = supabase.from('productos').select('*').order('creado_en', { ascending: false });
 
-  <footer>
-    <p>© 2025 Perfumarket. Todos los derechos reservados. MSK.INC</p>
-  </footer>
-
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-    const supabase = createClient(
-      'https://lourpqpgiqfyixrvyfuo.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
-    );
-
-    const lista = document.getElementById("lista-productos");
-
-    async function cargarProductos() {
-      const { data: productos, error } = await supabase
-        .from('productos')
-        .select('*')
-        .order('creado_en', { ascending: false });
-
-      if (error) {
-        lista.innerHTML = `<p>Error al cargar productos.</p>`;
-        return;
-      }
-
-      if (productos.length === 0) {
-        lista.innerHTML = `<p>No hay productos disponibles.</p>`;
-        return;
-      }
-
-      productos.forEach(p => {
-        const card = document.createElement("div");
-        card.classList.add("card-producto");
-        card.innerHTML = `
-          <img src="${p.imagen_url}" alt="${p.nombre}" />
-          <h3>${p.nombre}</h3>
-          <p class="precio">$${p.precio}</p>
-          <p>${p.descripcion?.substring(0, 80)}...</p>
-          <button class="btn-carrito" data-id="${p.id}">Agregar al carrito</button>
-        `;
-        lista.appendChild(card);
-      });
-
-      // Agregar funcionalidad de botones al finalizar render
-      setTimeout(() => {
-        const botones = document.querySelectorAll(".btn-carrito");
-        botones.forEach(btn => {
-          btn.addEventListener("click", async () => {
-            const producto_id = btn.getAttribute("data-id");
-            const { data: { session } } = await supabase.auth.getSession();
-
-            if (!session) {
-              alert("Debes iniciar sesión para agregar al carrito.");
-              return;
-            }
-
-            const usuario_id = session.user.id;
-
-            const { data: existente } = await supabase
-              .from('carrito')
-              .select('id, cantidad')
-              .eq('usuario_id', usuario_id)
-              .eq('producto_id', producto_id)
-              .single();
-
-            if (existente) {
-              await supabase
-                .from('carrito')
-                .update({ cantidad: existente.cantidad + 1 })
-                .eq('id', existente.id);
-            } else {
-              await supabase
-                .from('carrito')
-                .insert([{ usuario_id, producto_id, cantidad: 1 }]);
-            }
-
-            alert("Producto agregado al carrito.");
-          });
-        });
-      }, 300);
+    if (filtroCategoria) {
+      query = query.ilike('categoria', `%${filtroCategoria}%`);
     }
 
-    cargarProductos();
-  </script>
-</body>
-</html>
+    const { data: productos, error } = await query;
+
+    if (error || !productos) {
+      lista.innerHTML = `<p>Error al cargar productos.</p>`;
+      return;
+    }
+
+    if (productos.length === 0) {
+      lista.innerHTML = `<p>No hay productos disponibles en esta categoría.</p>`;
+      return;
+    }
+
+    lista.innerHTML = "";
+    productos.forEach(p => {
+      const card = document.createElement("div");
+      card.classList.add("card-producto");
+      card.innerHTML = `
+        <img src="${p.imagen_url}" alt="${p.nombre}" />
+        <h3>${p.nombre}</h3>
+        <p class="precio">$${p.precio}</p>
+        <p>${p.descripcion?.substring(0, 80)}...</p>
+        <button class="btn-carrito" data-id="${p.id}">Agregar al carrito</button>
+      `;
+      lista.appendChild(card);
+    });
+  }
+
+  cargarProductos();
+</script>

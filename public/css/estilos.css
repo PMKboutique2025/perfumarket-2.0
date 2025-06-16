@@ -495,3 +495,98 @@ td[contenteditable="true"]:focus {
   background-color: #fff3f8;
   outline: 1px solid #b32572;
 }
+
+.categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin: 4rem auto;
+  padding: 0 2rem;
+  max-width: 1200px;
+}
+
+.categoria {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+  text-decoration: none;
+  color: #000;
+}
+
+.categoria:hover {
+  transform: scale(1.02);
+}
+
+.categoria img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  filter: brightness(0.85);
+}
+
+.categoria h2 {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 2rem;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+}
+
+/* Tema para categoría HOMBRE */
+.tema-hombre {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+}
+
+.tema-hombre header,
+.tema-hombre .card-producto,
+.tema-hombre footer {
+  background-color: #2a2a2a;
+  color: #f0f0f0;
+}
+
+.tema-hombre .btn-carrito {
+  background-color: #444;
+  color: white;
+  border: 1px solid #777;
+}
+
+/* Tema para categoría MUJER */
+.tema-mujer {
+  background-color: #fff0f5;
+  color: #333;
+}
+
+.tema-mujer header,
+.tema-mujer .card-producto,
+.tema-mujer footer {
+  background-color: #ffe4ec;
+  color: #333;
+}
+
+.tema-mujer .btn-carrito {
+  background-color: #d81b60;
+  color: white;
+  border: none;
+}
+
+/* Tema para SUPLEMENTOS */
+.tema-suplementos {
+  background-color: #f4fff4;
+  color: #222;
+}
+
+.tema-suplementos .card-producto {
+  background-color: #e6ffee;
+  border: 1px solid #b2dfdb;
+}
+
+.tema-suplementos .btn-carrito {
+  background-color: #009688;
+  color: white;
+  border: none;
+}
