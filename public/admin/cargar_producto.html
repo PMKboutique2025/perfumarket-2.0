@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cargar Producto | Admin | Perfumarket</title>
+  <link rel="stylesheet" href="../../css/estilos.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket | Admin</div>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cargar_producto.html" class="activo">Cargar producto</a></li>
+        <li><a href="../../public/home.html">Ver tienda</a></li>
+        <li><a href="../../public/login.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="admin-panel">
+    <h1>Cargar nuevo producto</h1>
+    <form id="form-producto">
+      <input type="text" id="nombre" placeholder="Nombre del producto" required />
+      <input type="text" id="marca" placeholder="Marca" />
+      <input type="text" id="modelo" placeholder="Modelo" />
+      <input type="text" id="categoria" placeholder="Categoría (ej. calzado, perfume...)" />
+      <input type="text" id="genero" placeholder="Género (dama, caballero, unisex)" />
+      <input type="text" id="temporada" placeholder="Temporada (PV25, OI25...)" />
+      <input type="text" id="estilo" placeholder="Estilo (casual, elegante...)" />
+      <input type="text" id="talla" placeholder="Tallas disponibles (separadas por coma)" />
+      <textarea id="descripcion" placeholder="Descripción del producto" rows="4"></textarea>
+      <input type="number" id="precio" placeholder="Precio ($MXN)" required />
+      <input type="number" id="stock" placeholder="Stock disponible" required />
+      <input type="file" id="imagen" accept="image/*" required />
+      <button type="submit">Guardar producto</button>
+    </form>
+
+    <p id="resultado" class="mensaje"></p>
+  </main>
+
+  <footer>
+    <p>Panel administrativo © 2025 Perfumarket  MSK.INC</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    const form = document.getElementById('form-producto');
+    const resultado = document.getElementById('resultado');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const archivo = document.getElementById('imagen').files[0];
+      if (!archivo) return alert("Debe subir una imagen");
+
+      const nombreUnico = `${Date.now()}_${archivo.name}`;
+      const { data: storage, error: err1 } = await supabase
+        .storage
+        .from('imagenes')
+        .upload(nombreUnico, archivo);
+
+      if (err1) {
+        resultado.textContent = 'Error al subir imagen.';
+        return;
+      }
+
+      const imagenUrl = `${supabase.storage.from('imagenes').getPublicUrl(nombreUnico).data.publicUrl}`;
+
+      const producto = {
+        nombre: document.getElementById('nombre').value,
+        marca: document.getElementById('marca').value,
+        modelo: document.getElementById('modelo').value,
+        categoria: document.getElementById('categoria').value,
+        genero: document.getElementById('genero').value,
+        temporada: document.getElementById('temporada').value,
+        estilo: document.getElementById('estilo').value,
+        talla: document.getElementById('talla').value.split(',').map(t => t.trim()),
+        descripcion: document.getElementById('descripcion').value,
+        precio: parseFloat(document.getElementById('precio').value),
+        stock: parseInt(document.getElementById('stock').value),
+        imagen_url: imagenUrl,
+        promocion: false
+      };
+
+      const { error } = await supabase
+        .from('productos')
+        .insert([producto]);
+
+      if (error) {
+        resultado.textContent = 'Error al guardar producto.';
+      } else {
+        resultado.textContent = 'Producto guardado correctamente.';
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
