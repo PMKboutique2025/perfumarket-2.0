@@ -51,6 +51,7 @@
 
 </head>
 <body>
+  <div id="navbar-container"></div>
   <main>
     <div class="resumen-container" id="resumenCompra">
       <h2>Resumen de Compra</h2>
@@ -143,5 +144,13 @@
 
     cargarResumen();
   </script>
+  <script>
+  fetch('navbar.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('navbar-container').innerHTML = html);
+</script>
+
 </body>
+
+
 </html>

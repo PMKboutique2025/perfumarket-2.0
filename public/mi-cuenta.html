@@ -8,6 +8,7 @@
   <link rel="shortcut icon" href="img/favicon.jpg" type="image/jpg">
 </head>
 <body>
+  <div id="navbar-container"></div>
   <header>
     <div class="logo">Perfumarket</div>
     <nav>
@@ -120,5 +121,11 @@
       border-radius: 8px;
     }
   </style>
+  <script>
+  fetch('navbar.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('navbar-container').innerHTML = html);
+</script>
+
 </body>
 </html>

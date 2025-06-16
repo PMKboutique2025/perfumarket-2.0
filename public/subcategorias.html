@@ -99,7 +99,7 @@
   </style>
 </head>
 <body>
-
+  <div id="navbar-container"></div>
   <header class="main-header">
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo">
     <h1 id="tituloCategoria">Subcategorías</h1>
@@ -151,6 +151,12 @@
       contenedor.innerHTML = "<p style='text-align:center;'>Categoría no válida.</p>";
     }
   </script>
-
+<script>
+  fetch('navbar.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('navbar-container').innerHTML = html);
+</script>
 </body>
+
+
 </html>

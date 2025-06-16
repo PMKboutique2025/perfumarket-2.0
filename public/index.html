@@ -138,7 +138,7 @@
   </style>
 </head>
 <body>
-
+  <div id="navbar-container"></div>
   <!-- ENCABEZADO CON LOGO -->
   <header class="main-header">
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo">
@@ -176,6 +176,11 @@
       document.body.classList.add(`tema-${categoria.toLowerCase()}`);
     }
   </script>
+<script>
+  fetch('navbar.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('navbar-container').innerHTML = html);
+</script>
 
 </body>
 </html>

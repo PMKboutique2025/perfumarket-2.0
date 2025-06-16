@@ -113,7 +113,7 @@
   </style>
 </head>
 <body>
-
+  <div id="navbar-container"></div>
   <header>
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo" />
   </header>
@@ -183,5 +183,11 @@
 
     cargarProductos();
   </script>
+  <script>
+  fetch('navbar.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('navbar-container').innerHTML = html);
+</script>
+
 </body>
 </html>

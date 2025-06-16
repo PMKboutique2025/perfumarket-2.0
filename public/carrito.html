@@ -10,6 +10,7 @@
 
 </head>
 <body>
+  <div id="navbar-container"></div>
   <header>
     <div class="logo">Perfumarket</div>
     <nav>
@@ -107,5 +108,11 @@
 
     cargarCarrito();
   </script>
+  <script>
+  fetch('navbar.html')
+    .then(res => res.text())
+    .then(html => document.getElementById('navbar-container').innerHTML = html);
+</script>
+
 </body>
 </html>

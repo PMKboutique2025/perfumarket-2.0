@@ -1,0 +1,88 @@
+<!-- navbar.html -->
+<style>
+  /* Estilos base */
+  .navbar-hamburguesa {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 999;
+    font-size: 2rem;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: #333;
+  }
+
+  .menu-lateral {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    z-index: 998;
+    transition: left 0.3s ease;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .menu-lateral a {
+    text-decoration: none;
+    color: #111;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: color 0.2s ease;
+  }
+
+  .menu-lateral a:hover {
+    color: #b32572;
+  }
+
+  .menu-abierto {
+    left: 0 !important;
+  }
+
+  .menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 997;
+  }
+
+  .menu-overlay.activo {
+    display: block;
+  }
+</style>
+
+<!-- Botón hamburguesa -->
+<button class="navbar-hamburguesa" onclick="abrirMenu()">
+  ☰
+</button>
+
+<!-- Menú lateral -->
+<nav id="menuLateral" class="menu-lateral">
+  <a href="subcategorias.html?categoria=mujer">Mujer</a>
+  <a href="subcategorias.html?categoria=hombre">Hombre</a>
+  <a href="subcategorias.html?categoria=suplementos">Suplementos</a>
+</nav>
+
+<!-- Overlay -->
+<div id="menuOverlay" class="menu-overlay" onclick="cerrarMenu()"></div>
+
+<!-- Script para abrir/cerrar -->
+<script>
+  function abrirMenu() {
+    document.getElementById('menuLateral').classList.add('menu-abierto');
+    document.getElementById('menuOverlay').classList.add('activo');
+  }
+
+  function cerrarMenu() {
+    document.getElementById('menuLateral').classList.remove('menu-abierto');
+    document.getElementById('menuOverlay').classList.remove('activo');
+  }
+</script>
