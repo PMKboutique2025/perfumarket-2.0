@@ -18,6 +18,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 app.get('/', (req, res) => {
   res.send('🛍️ Backend Perfumarket 2.0 activo');
 });
+app.get('/api/status', (req, res) => {
+  res.json({ status: 'Servidor funcionando correctamente 🟢' });
+});
+
 
 // 🔹 Cargar nuevo producto
 app.post('/api/cargar-producto', async (req, res) => {
