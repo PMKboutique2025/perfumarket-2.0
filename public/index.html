@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/png" href="img/favicon.png">
   <title>Perfumarket 2.0</title>
+  <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="stylesheet" href="css/estilos.css" />
+
   <style>
     body {
       margin: 0;
@@ -14,7 +15,7 @@
       color: #111;
     }
 
-    /* HEADER Y MENÚ */
+    /* HEADER */
     .header {
       display: flex;
       align-items: center;
@@ -28,9 +29,9 @@
     }
 
     .logo {
-      font-size: 1.5em;
-      font-weight: bold;
+      font-size: 1.6em;
       font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
       text-transform: uppercase;
     }
 
@@ -39,16 +40,17 @@
       cursor: pointer;
     }
 
+    /* SIDEBAR */
     .sidebar {
       position: fixed;
       top: 0;
-      left: -300px;
+      left: -260px;
       width: 260px;
       height: 100vh;
       background-color: #111;
       color: white;
       padding: 20px;
-      transition: all 0.3s ease;
+      transition: left 0.3s ease;
       z-index: 1000;
     }
 
@@ -69,10 +71,10 @@
     .sidebar nav ul li a {
       color: white;
       text-decoration: none;
-      font-size: 1.2em;
-      display: block;
+      font-size: 1.1em;
       padding: 10px;
-      border-bottom: 1px solid #444;
+      display: block;
+      border-bottom: 1px solid #333;
       transition: background 0.3s;
     }
 
@@ -83,7 +85,7 @@
     /* CATEGORÍAS PRINCIPALES */
     .main-header {
       text-align: center;
-      font-size: 2.5rem;
+      font-size: 2.6rem;
       font-weight: bold;
       padding: 2rem 1rem 1rem;
       letter-spacing: 2px;
@@ -99,14 +101,15 @@
 
     .categoria {
       position: relative;
-      width: 280px;
-      height: 400px;
+      width: 100%;
+      max-width: 400px;
+      height: 600px;
       border-radius: 10px;
       overflow: hidden;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       text-decoration: none;
+      color: white;
+      transition: transform 0.3s ease;
     }
 
     .categoria:hover {
@@ -117,29 +120,16 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(0.8);
+      filter: brightness(0.75);
     }
 
     .categoria h2 {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      color: #fff;
-      font-size: 2rem;
-      font-weight: 600;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-    }
-
-    @media (max-width: 768px) {
-      .categorias {
-        flex-direction: column;
-        align-items: center;
-        padding: 1rem;
-      }
-      .categoria {
-        width: 90%;
-        height: 300px;
-      }
+      bottom: 30px;
+      left: 30px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
     }
 
     footer {
@@ -148,13 +138,29 @@
       font-size: 0.9rem;
       background-color: #f5f5f5;
     }
-  </style>
-  <link rel="shortcut icon" href="img/favicon.jpg" type="image/jpg">
 
+    @media (max-width: 768px) {
+      .categorias {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+      }
+
+      .categoria {
+        height: 400px;
+      }
+
+      .categoria h2 {
+        font-size: 1.8rem;
+        bottom: 20px;
+        left: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Encabezado con menú -->
+  <!-- Encabezado -->
   <header class="header">
     <div class="menu-toggle" id="menuToggle">&#9776;</div>
     <div class="logo">Perfumarket</div>
@@ -164,40 +170,41 @@
   <aside class="sidebar" id="sidebar">
     <nav>
       <ul>
-        <li><a href="home.html?categoria=mujer">Mujer</a></li>
-        <li><a href="home.html?categoria=hombre">Hombre</a></li>
-        <li><a href="home.html?categoria=suplementos">Suplementos</a></li>
+        <li><a href="subcategorias.html?categoria=mujer">Mujer</a></li>
+        <li><a href="subcategorias.html?categoria=hombre">Hombre</a></li>
+        <li><a href="subcategorias.html?categoria=suplementos">Suplementos</a></li>
         <li><a href="login.html">Cerrar sesión</a></li>
       </ul>
     </nav>
   </aside>
 
-  <!-- Banner -->
+  <!-- Título -->
   <h1 class="main-header">PERFUMARKET</h1>
 
-  <!-- Categorías visuales -->
+  <!-- Categorías -->
   <main>
     <section class="categorias">
-      <a href="home.html?categoria=mujer" class="categoria">
+      <a href="subcategorias.html?categoria=mujer" class="categoria">
         <img src="https://images.unsplash.com/photo-1593031311646-b8d6f7e0a612" alt="Mujer">
         <h2>Mujer</h2>
       </a>
-      <a href="home.html?categoria=hombre" class="categoria">
+      <a href="subcategorias.html?categoria=hombre" class="categoria">
         <img src="https://images.unsplash.com/photo-1551861568-3982f776b66b" alt="Hombre">
         <h2>Hombre</h2>
       </a>
-      <a href="home.html?categoria=suplementos" class="categoria">
-        <img src="https://images.unsplash.com/photo-1587502536263-9298f9fdb732" alt="Suplementos y Proteínas">
+      <a href="subcategorias.html?categoria=suplementos" class="categoria">
+        <img src="https://images.unsplash.com/photo-1587502536263-9298f9fdb732" alt="Suplementos">
         <h2>Suplementos</h2>
       </a>
     </section>
   </main>
 
+  <!-- Footer -->
   <footer>
     © 2025 Perfumarket. Todos los derechos reservados. MSK.INC
   </footer>
 
-  <!-- Script para abrir/cerrar menú -->
+  <!-- JS menú -->
   <script>
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");

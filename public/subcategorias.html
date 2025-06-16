@@ -1,10 +1,11 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Subcategorías | Perfumarket</title>
   <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="icon" href="img/favicon.png" type="image/png" />
   <style>
     body {
       margin: 0;
@@ -13,13 +14,72 @@
       color: #111;
     }
 
-    .header-subcategorias {
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #000;
+      color: white;
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.5em;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+    }
+
+    .menu-toggle {
+      font-size: 2em;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100vh;
+      background-color: #111;
+      color: white;
+      padding: 20px;
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar nav ul li {
+      margin: 20px 0;
+    }
+
+    .sidebar nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2em;
+      padding: 10px;
+      display: block;
+      border-bottom: 1px solid #444;
+    }
+
+    .titulo-subcategorias {
       text-align: center;
-      padding: 2rem 1rem 1rem;
-      font-size: 2rem;
+      padding: 2rem 1rem 0.5rem;
+      font-size: 2.2rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
 
     .grid-subcategorias {
@@ -32,13 +92,12 @@
 
     .subcat-card {
       position: relative;
-      width: 260px;
-      height: 340px;
+      width: 280px;
+      height: 380px;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-decoration: none;
-      color: white;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
       transition: transform 0.3s ease;
     }
 
@@ -50,24 +109,26 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(0.7);
+      filter: brightness(0.75);
     }
 
     .subcat-card h3 {
       position: absolute;
       bottom: 20px;
       left: 20px;
-      font-size: 1.6rem;
-      font-weight: bold;
-      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 1.8rem;
+      text-shadow: 0 0 5px rgba(0,0,0,0.6);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      background-color: #f5f5f5;
+      padding: 1rem 0;
     }
 
     @media (max-width: 768px) {
-      .grid-subcategorias {
-        flex-direction: column;
-        align-items: center;
-      }
-
       .subcat-card {
         width: 90%;
         height: 280px;
@@ -77,13 +138,40 @@
 </head>
 <body>
 
-  <h1 class="header-subcategorias" id="tituloCategoria">Subcategorías</h1>
+  <!-- Header superior -->
+  <header class="header">
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+    <div class="logo">Perfumarket</div>
+  </header>
 
-  <section class="grid-subcategorias" id="contenedorSubcategorias">
-    <!-- JS insertará aquí las subcategorías -->
-  </section>
+  <!-- Menú lateral -->
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="home.html?categoria=mujer">Mujer</a></li>
+        <li><a href="home.html?categoria=hombre">Hombre</a></li>
+        <li><a href="home.html?categoria=suplementos">Suplementos</a></li>
+        <li><a href="login.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </aside>
 
+  <!-- Título de subcategoría -->
+  <h1 class="titulo-subcategorias" id="tituloCategoria">Subcategorías</h1>
+
+  <!-- Contenedor -->
+  <section class="grid-subcategorias" id="contenedorSubcategorias"></section>
+
+  <!-- Script de navegación y renderizado -->
   <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+
+    menuToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     const categoria = urlParams.get('categoria')?.toLowerCase();
 
@@ -122,9 +210,13 @@
         contenedor.appendChild(card);
       });
     } else {
-      contenedor.innerHTML = "<p>Categoría no válida.</p>";
+      contenedor.innerHTML = "<p style='text-align:center;'>Categoría no válida.</p>";
     }
   </script>
+
+  <footer>
+    © 2025 Perfumarket. Todos los derechos reservados. MSK.INC
+  </footer>
 
 </body>
 </html>

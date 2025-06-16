@@ -14,6 +14,66 @@
       padding: 0;
     }
 
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #000;
+      color: white;
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.5em;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+    }
+
+    .menu-toggle {
+      font-size: 2em;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100vh;
+      background-color: #111;
+      color: white;
+      padding: 20px;
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar nav ul li {
+      margin: 20px 0;
+    }
+
+    .sidebar nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2em;
+      padding: 10px;
+      display: block;
+      border-bottom: 1px solid #444;
+    }
+
     .grid-productos {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -74,7 +134,7 @@
       background-color: #b32572;
     }
 
-    /* Tema gris para categoría hombre */
+    /* Tema oscuro para HOMBRE */
     body.tema-hombre {
       background-color: #1e1e1e;
       color: #f4f4f4;
@@ -98,10 +158,30 @@
 </head>
 <body>
 
+  <!-- Header -->
+  <header class="header">
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
+    <div class="logo">Perfumarket</div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="home.html?categoria=mujer">Mujer</a></li>
+        <li><a href="home.html?categoria=hombre">Hombre</a></li>
+        <li><a href="home.html?categoria=suplementos">Suplementos</a></li>
+        <li><a href="login.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Productos -->
   <div id="lista-productos" class="grid-productos"></div>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
     const supabase = createClient(
       'https://lourpqpgiqfyixrvyfuo.supabase.co',
@@ -109,12 +189,13 @@
     );
 
     const lista = document.getElementById("lista-productos");
-
     const urlParams = new URLSearchParams(window.location.search);
     const filtroCategoria = urlParams.get('categoria');
+    const filtroSubcat = urlParams.get('subcat');
 
-    if (filtroCategoria) {
-      document.body.classList.add(`tema-${filtroCategoria.toLowerCase()}`);
+    // Tema visual para categoría
+    if (filtroCategoria === 'hombre') {
+      document.body.classList.add('tema-hombre');
     }
 
     async function cargarProductos() {
@@ -122,6 +203,10 @@
 
       if (filtroCategoria) {
         query = query.ilike('categoria', `%${filtroCategoria}%`);
+      }
+
+      if (filtroSubcat) {
+        query = query.ilike('subcategoria', `%${filtroSubcat}%`);
       }
 
       const { data: productos, error } = await query;
@@ -144,7 +229,7 @@
           <img src="${p.imagen_url}" alt="${p.nombre}" />
           <h3>${p.nombre}</h3>
           <p class="precio">$${p.precio}</p>
-          <p>${p.descripcion?.substring(0, 80)}...</p>
+          <p>${(p.descripcion || '').substring(0, 80)}...</p>
           <button class="btn-carrito" data-id="${p.id}">Agregar al carrito</button>
         `;
         lista.appendChild(card);
@@ -152,6 +237,12 @@
     }
 
     cargarProductos();
+
+    // Menú lateral
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("active");
+    });
   </script>
+
 </body>
 </html>
