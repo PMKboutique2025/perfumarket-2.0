@@ -1,57 +1,157 @@
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Perfumarket - Catálogo</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel="shortcut icon" href="img/favicon.png" type="image/png">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+    }
 
-  const supabase = createClient(
+    .grid-productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .card-producto {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-producto:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-producto img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .card-producto h3 {
+      margin: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .card-producto .precio {
+      margin: 0 1rem;
+      font-weight: bold;
+      color: #b32572;
+    }
+
+    .card-producto p {
+      margin: 0 1rem 1rem;
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .btn-carrito {
+      margin: auto 1rem 1rem;
+      padding: 0.6rem 1rem;
+      background-color: #111;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn-carrito:hover {
+      background-color: #b32572;
+    }
+
+    /* Tema gris para categoría hombre */
+    body.tema-hombre {
+      background-color: #1e1e1e;
+      color: #f4f4f4;
+    }
+
+    body.tema-hombre .card-producto {
+      background-color: #2a2a2a;
+      color: #f4f4f4;
+    }
+
+    body.tema-hombre .btn-carrito {
+      background-color: #888;
+      color: #fff;
+    }
+
+    body.tema-hombre .btn-carrito:hover {
+      background-color: #ccc;
+      color: #111;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="lista-productos" class="grid-productos"></div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
       'https://lourpqpgiqfyixrvyfuo.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
     );
 
-  const lista = document.getElementById("lista-productos");
+    const lista = document.getElementById("lista-productos");
 
-    // ✅ Leer parámetro desde la URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const filtroCategoria = urlParams.get('categoria'); // ej. ?categoria=mujer
-
-  // ✅ Aplicar tema visual según categoría
-  if (filtroCategoria) {
-    document.body.classList.add(`tema-${filtroCategoria.toLowerCase()}`);
-  }
-
-
-
-  async function cargarProductos() {
-    let query = supabase.from('productos').select('*').order('creado_en', { ascending: false });
+    const urlParams = new URLSearchParams(window.location.search);
+    const filtroCategoria = urlParams.get('categoria');
 
     if (filtroCategoria) {
-      query = query.ilike('categoria', `%${filtroCategoria}%`);
+      document.body.classList.add(`tema-${filtroCategoria.toLowerCase()}`);
     }
 
-    const { data: productos, error } = await query;
+    async function cargarProductos() {
+      let query = supabase.from('productos').select('*').order('creado_en', { ascending: false });
 
-    if (error || !productos) {
-      lista.innerHTML = `<p>Error al cargar productos.</p>`;
-      return;
+      if (filtroCategoria) {
+        query = query.ilike('categoria', `%${filtroCategoria}%`);
+      }
+
+      const { data: productos, error } = await query;
+
+      if (error || !productos) {
+        lista.innerHTML = `<p style="padding:2rem;">Error al cargar productos.</p>`;
+        return;
+      }
+
+      if (productos.length === 0) {
+        lista.innerHTML = `<p style="padding:2rem;">No hay productos disponibles en esta categoría.</p>`;
+        return;
+      }
+
+      lista.innerHTML = "";
+      productos.forEach(p => {
+        const card = document.createElement("div");
+        card.classList.add("card-producto");
+        card.innerHTML = `
+          <img src="${p.imagen_url}" alt="${p.nombre}" />
+          <h3>${p.nombre}</h3>
+          <p class="precio">$${p.precio}</p>
+          <p>${p.descripcion?.substring(0, 80)}...</p>
+          <button class="btn-carrito" data-id="${p.id}">Agregar al carrito</button>
+        `;
+        lista.appendChild(card);
+      });
     }
 
-    if (productos.length === 0) {
-      lista.innerHTML = `<p>No hay productos disponibles en esta categoría.</p>`;
-      return;
-    }
-
-    lista.innerHTML = "";
-    productos.forEach(p => {
-      const card = document.createElement("div");
-      card.classList.add("card-producto");
-      card.innerHTML = `
-        <img src="${p.imagen_url}" alt="${p.nombre}" />
-        <h3>${p.nombre}</h3>
-        <p class="precio">$${p.precio}</p>
-        <p>${p.descripcion?.substring(0, 80)}...</p>
-        <button class="btn-carrito" data-id="${p.id}">Agregar al carrito</button>
-      `;
-      lista.appendChild(card);
-    });
-  }
-
-  cargarProductos();
-</script>
+    cargarProductos();
+  </script>
+</body>
+</html>
