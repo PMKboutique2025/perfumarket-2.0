@@ -590,3 +590,25 @@ td[contenteditable="true"]:focus {
   color: white;
   border: none;
 }
+
+
+.logo-main {
+  display: block;
+  margin: 0 auto;
+  max-width: 280px;
+  height: auto;
+}
+.logo-perfumarket {
+  display: block;
+  margin: 0 auto;
+  height: auto;
+}
+
+/* Tamaño específico por página */
+body#index .logo-perfumarket {
+  max-width: 280px;
+}
+
+body#subcategorias .logo-perfumarket {
+  max-width: 160px;
+}

@@ -14,7 +14,7 @@
       color: #111;
     }
 
-    /* HEADER */
+    /* HEADER CON LOGO */
     .main-header {
       display: flex;
       flex-direction: column;
@@ -25,7 +25,7 @@
     }
 
     .main-header img {
-      max-width: 200px;
+      max-width: 180px;
       height: auto;
       margin-bottom: 1rem;
     }
@@ -80,6 +80,13 @@
       margin: 0;
     }
 
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      background-color: #f5f5f5;
+    }
+
     @media (max-width: 768px) {
       .categorias {
         flex-direction: column;
@@ -92,7 +99,7 @@
       }
 
       .main-header img {
-        max-width: 150px;
+        max-width: 140px;
       }
 
       .main-header h1 {
@@ -100,20 +107,45 @@
       }
     }
 
-    footer {
-      text-align: center;
-      padding: 1rem 0;
-      font-size: 0.9rem;
-      background-color: #f5f5f5;
+    /* TEMAS POR CATEGORÍA */
+    body.tema-mujer {
+      background-color: #ffe6f0;
+      color: #b32572;
+    }
+
+    body.tema-hombre {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+    }
+
+    body.tema-suplementos {
+      background-color: #e6ffe6;
+      color: #14532d;
+    }
+
+    body.tema-hombre .main-header h1,
+    body.tema-hombre .categoria h2 {
+      color: #f0f0f0;
+    }
+
+    body.tema-mujer .categoria h2 {
+      color: #b32572;
+    }
+
+    body.tema-suplementos .categoria h2 {
+      color: #14532d;
     }
   </style>
 </head>
 <body>
 
+  <!-- ENCABEZADO CON LOGO -->
   <header class="main-header">
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo">
-      </header>
+    <h1>PERFUMARKET</h1>
+  </header>
 
+  <!-- CATEGORÍAS DESTACADAS -->
   <main>
     <section class="categorias">
       <a href="subcategorias.html?categoria=mujer" class="categoria">
@@ -125,15 +157,25 @@
         <h2>Hombre</h2>
       </a>
       <a href="subcategorias.html?categoria=suplementos" class="categoria">
-        <img src="https://images.unsplash.com/photo-1587502536263-9298f9fdb732" alt="Suplementos y Proteínas">
+        <img src="https://images.unsplash.com/photo-1587502536263-9298f9fdb732" alt="Suplementos">
         <h2>Suplementos</h2>
       </a>
     </section>
   </main>
 
+  <!-- FOOTER -->
   <footer>
     © 2025 Perfumarket. Todos los derechos reservados. MSK.INC
   </footer>
+
+  <!-- SCRIPT PARA APLICAR TEMA POR CATEGORÍA -->
+  <script>
+    const url = new URL(window.location.href);
+    const categoria = url.searchParams.get("categoria");
+    if (categoria) {
+      document.body.classList.add(`tema-${categoria.toLowerCase()}`);
+    }
+  </script>
 
 </body>
 </html>

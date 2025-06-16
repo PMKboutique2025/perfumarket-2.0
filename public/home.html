@@ -5,73 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Perfumarket - Catálogo</title>
   <link rel="stylesheet" href="css/estilos.css" />
-  <link rel="shortcut icon" href="img/favicon.jpg" type="image/jpg">
+  <link rel="shortcut icon" href="img/favicon.png" type="image/png" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       background-color: #fff;
-      margin: 0;
-      padding: 0;
+      color: #111;
     }
 
-    .header {
+    header {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      background-color: #000;
-      color: white;
-      padding: 15px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      padding: 1.5rem 1rem 1rem;
     }
 
-    .logo {
-      font-size: 1.5em;
-      font-weight: bold;
-      font-family: 'Orbitron', sans-serif;
-      text-transform: uppercase;
-    }
-
-    .menu-toggle {
-      font-size: 2em;
-      cursor: pointer;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -260px;
-      width: 260px;
-      height: 100vh;
-      background-color: #111;
-      color: white;
-      padding: 20px;
-      transition: all 0.3s ease;
-      z-index: 1001;
-    }
-
-    .sidebar.active {
-      left: 0;
-    }
-
-    .sidebar nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .sidebar nav ul li {
-      margin: 20px 0;
-    }
-
-    .sidebar nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-size: 1.2em;
-      padding: 10px;
-      display: block;
-      border-bottom: 1px solid #444;
+    header img {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 1rem;
     }
 
     .grid-productos {
@@ -82,18 +35,17 @@
     }
 
     .card-producto {
+      background-color: #fff;
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      background-color: #fff;
+      transition: transform 0.3s ease;
       display: flex;
       flex-direction: column;
     }
 
     .card-producto:hover {
       transform: translateY(-5px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     }
 
     .card-producto img {
@@ -107,10 +59,10 @@
       font-size: 1.2rem;
     }
 
-    .card-producto .precio {
+    .precio {
       margin: 0 1rem;
-      font-weight: bold;
       color: #b32572;
+      font-weight: bold;
     }
 
     .card-producto p {
@@ -127,14 +79,20 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
 
     .btn-carrito:hover {
       background-color: #b32572;
     }
 
-    /* Tema oscuro para HOMBRE */
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      background-color: #f5f5f5;
+    }
+
+    /* Tema gris para categoría hombre */
     body.tema-hombre {
       background-color: #1e1e1e;
       color: #f4f4f4;
@@ -142,12 +100,10 @@
 
     body.tema-hombre .card-producto {
       background-color: #2a2a2a;
-      color: #f4f4f4;
     }
 
     body.tema-hombre .btn-carrito {
       background-color: #888;
-      color: #fff;
     }
 
     body.tema-hombre .btn-carrito:hover {
@@ -158,30 +114,20 @@
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="menu-toggle" id="menuToggle">&#9776;</div>
-    <div class="logo">Perfumarket</div>
+  <header>
+    <img src="img/PMK_transparente.png" alt="Perfumarket Logo" />
   </header>
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <nav>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="home.html?categoria=mujer">Mujer</a></li>
-        <li><a href="home.html?categoria=hombre">Hombre</a></li>
-        <li><a href="home.html?categoria=suplementos">Suplementos</a></li>
-        <li><a href="login.html">Cerrar sesión</a></li>
-      </ul>
-    </nav>
-  </aside>
+  <main>
+    <div id="lista-productos" class="grid-productos"></div>
+  </main>
 
-  <!-- Productos -->
-  <div id="lista-productos" class="grid-productos"></div>
+  <footer>
+    © 2025 Perfumarket. Todos los derechos reservados. MSK.INC
+  </footer>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
     const supabase = createClient(
       'https://lourpqpgiqfyixrvyfuo.supabase.co',
@@ -189,24 +135,23 @@
     );
 
     const lista = document.getElementById("lista-productos");
-    const urlParams = new URLSearchParams(window.location.search);
-    const filtroCategoria = urlParams.get('categoria');
-    const filtroSubcat = urlParams.get('subcat');
 
-    // Tema visual para categoría
-    if (filtroCategoria === 'hombre') {
-      document.body.classList.add('tema-hombre');
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoria = urlParams.get("categoria");
+    const subcat = urlParams.get("subcat");
+
+    if (categoria) {
+      document.body.classList.add(`tema-${categoria.toLowerCase()}`);
     }
 
     async function cargarProductos() {
-      let query = supabase.from('productos').select('*').order('creado_en', { ascending: false });
+      let query = supabase.from("productos").select("*").order("creado_en", { ascending: false });
 
-      if (filtroCategoria) {
-        query = query.ilike('categoria', `%${filtroCategoria}%`);
+      if (categoria) {
+        query = query.ilike("categoria", `%${categoria}%`);
       }
-
-      if (filtroSubcat) {
-        query = query.ilike('subcategoria', `%${filtroSubcat}%`);
+      if (subcat) {
+        query = query.ilike("subcategoria", `%${subcat}%`);
       }
 
       const { data: productos, error } = await query;
@@ -229,7 +174,7 @@
           <img src="${p.imagen_url}" alt="${p.nombre}" />
           <h3>${p.nombre}</h3>
           <p class="precio">$${p.precio}</p>
-          <p>${(p.descripcion || '').substring(0, 80)}...</p>
+          <p>${p.descripcion?.substring(0, 80)}...</p>
           <button class="btn-carrito" data-id="${p.id}">Agregar al carrito</button>
         `;
         lista.appendChild(card);
@@ -237,12 +182,6 @@
     }
 
     cargarProductos();
-
-    // Menú lateral
-    document.getElementById("menuToggle").addEventListener("click", () => {
-      document.getElementById("sidebar").classList.toggle("active");
-    });
   </script>
-
 </body>
 </html>
