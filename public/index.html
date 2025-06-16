@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Perfumarket 2.0</title>
-  <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="stylesheet" href="css/estilos.css" />
-
+  <link rel="icon" type="image/png" href="img/favicon.png">
   <style>
     body {
       margin: 0;
@@ -16,100 +15,48 @@
     }
 
     /* HEADER */
-    .header {
+    .main-header {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      background-color: #000;
-      color: white;
-      padding: 15px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 999;
+      justify-content: center;
+      padding: 1.5rem 1rem 1rem;
+      text-align: center;
     }
 
-    .logo {
-      font-size: 1.6em;
-      font-family: 'Orbitron', sans-serif;
-      font-weight: bold;
+    .main-header img {
+      max-width: 200px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+
+    .main-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
       text-transform: uppercase;
-    }
-
-    .menu-toggle {
-      font-size: 2em;
-      cursor: pointer;
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -260px;
-      width: 260px;
-      height: 100vh;
-      background-color: #111;
-      color: white;
-      padding: 20px;
-      transition: left 0.3s ease;
-      z-index: 1000;
-    }
-
-    .sidebar.active {
-      left: 0;
-    }
-
-    .sidebar nav ul {
-      list-style: none;
-      padding: 0;
       margin: 0;
     }
 
-    .sidebar nav ul li {
-      margin: 20px 0;
-    }
-
-    .sidebar nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-size: 1.1em;
-      padding: 10px;
-      display: block;
-      border-bottom: 1px solid #333;
-      transition: background 0.3s;
-    }
-
-    .sidebar nav ul li a:hover {
-      background-color: #222;
-    }
-
-    /* CATEGORÍAS PRINCIPALES */
-    .main-header {
-      text-align: center;
-      font-size: 2.6rem;
-      font-weight: bold;
-      padding: 2rem 1rem 1rem;
-      letter-spacing: 2px;
-    }
-
+    /* CATEGORÍAS DESTACADAS */
     .categorias {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 2rem;
       padding: 2rem;
     }
 
     .categoria {
       position: relative;
-      width: 100%;
-      max-width: 400px;
-      height: 600px;
+      width: 300px;
+      height: 400px;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       text-decoration: none;
-      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       transition: transform 0.3s ease;
+      cursor: pointer;
     }
 
     .categoria:hover {
@@ -125,11 +72,32 @@
 
     .categoria h2 {
       position: absolute;
-      bottom: 30px;
-      left: 30px;
-      font-size: 2.2rem;
-      font-weight: bold;
-      text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+      bottom: 20px;
+      left: 20px;
+      color: white;
+      font-size: 2rem;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .categorias {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .categoria {
+        width: 90%;
+        height: 300px;
+      }
+
+      .main-header img {
+        max-width: 150px;
+      }
+
+      .main-header h1 {
+        font-size: 2rem;
+      }
     }
 
     footer {
@@ -138,50 +106,15 @@
       font-size: 0.9rem;
       background-color: #f5f5f5;
     }
-
-    @media (max-width: 768px) {
-      .categorias {
-        flex-direction: column;
-        align-items: center;
-        padding: 1rem;
-      }
-
-      .categoria {
-        height: 400px;
-      }
-
-      .categoria h2 {
-        font-size: 1.8rem;
-        bottom: 20px;
-        left: 20px;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado -->
-  <header class="header">
-    <div class="menu-toggle" id="menuToggle">&#9776;</div>
-    <div class="logo">Perfumarket</div>
+  <header class="main-header">
+    <img src="img/PMK_transparente.png" alt="Perfumarket Logo">
+    <h1>PERFUMARKET</h1>
   </header>
 
-  <!-- Menú lateral -->
-  <aside class="sidebar" id="sidebar">
-    <nav>
-      <ul>
-        <li><a href="subcategorias.html?categoria=mujer">Mujer</a></li>
-        <li><a href="subcategorias.html?categoria=hombre">Hombre</a></li>
-        <li><a href="subcategorias.html?categoria=suplementos">Suplementos</a></li>
-        <li><a href="login.html">Cerrar sesión</a></li>
-      </ul>
-    </nav>
-  </aside>
-
-  <!-- Título -->
-  <h1 class="main-header">PERFUMARKET</h1>
-
-  <!-- Categorías -->
   <main>
     <section class="categorias">
       <a href="subcategorias.html?categoria=mujer" class="categoria">
@@ -193,26 +126,15 @@
         <h2>Hombre</h2>
       </a>
       <a href="subcategorias.html?categoria=suplementos" class="categoria">
-        <img src="https://images.unsplash.com/photo-1587502536263-9298f9fdb732" alt="Suplementos">
+        <img src="https://images.unsplash.com/photo-1587502536263-9298f9fdb732" alt="Suplementos y Proteínas">
         <h2>Suplementos</h2>
       </a>
     </section>
   </main>
 
-  <!-- Footer -->
   <footer>
     © 2025 Perfumarket. Todos los derechos reservados. MSK.INC
   </footer>
-
-  <!-- JS menú -->
-  <script>
-    const menuToggle = document.getElementById("menuToggle");
-    const sidebar = document.getElementById("sidebar");
-
-    menuToggle.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-    });
-  </script>
 
 </body>
 </html>
