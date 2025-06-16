@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel Admin | Perfumarket</title>
+  <link rel="stylesheet" href="../../css/estilos.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket | Admin</div>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html" class="activo">Dashboard</a></li>
+        <li><a href="cargar_producto.html">Cargar producto</a></li>
+        <li><a href="../../public/home.html">Ver tienda</a></li>
+        <li><a href="../../public/login.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="admin-panel">
+    <h1>Resumen de actividad</h1>
+
+    <div class="graficas-admin">
+      <canvas id="graficaVentas" height="180"></canvas>
+      <canvas id="graficaClics" height="180"></canvas>
+    </div>
+
+    <div class="tabla">
+      <h2>Productos más vendidos</h2>
+      <table id="tabla-productos">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Ventas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Se llenará dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p>Panel administrativo © 2025 Perfumarket</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    async function cargarDashboard() {
+      // TOP productos por ventas
+      const { data: detalle, error } = await supabase
+        .from('ventas_detalle')
+        .select('producto_id, cantidad, productos(nombre)')
+        .order('cantidad', { ascending: false });
+
+      const tabla = document.querySelector("#tabla-productos tbody");
+      const dataset = {};
+      const labels = [];
+      const ventas = [];
+
+      detalle?.forEach(d => {
+        const nombre = d.productos?.nombre || "Sin nombre";
+        if (!dataset[nombre]) dataset[nombre] = 0;
+        dataset[nombre] += d.cantidad;
+      });
+
+      for (const [nombre, cantidad] of Object.entries(dataset)) {
+        labels.push(nombre);
+        ventas.push(cantidad);
+        const row = `<tr><td>${nombre}</td><td>${cantidad}</td></tr>`;
+        tabla.innerHTML += row;
+      }
+
+      // Gráfica de ventas
+      new Chart(document.getElementById('graficaVentas'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Ventas por producto',
+            data: ventas,
+            backgroundColor: '#b32572'
+          }]
+        }
+      });
+
+      // CLICS
+      const { data: clics } = await supabase
+        .from('clics_productos')
+        .select('producto_id, productos(nombre)')
+        .limit(1000);
+
+      const contadorClics = {};
+      clics?.forEach(c => {
+        const nombre = c.productos?.nombre || "Desconocido";
+        if (!contadorClics[nombre]) contadorClics[nombre] = 0;
+        contadorClics[nombre]++;
+      });
+
+      const etiquetas = Object.keys(contadorClics);
+      const datosClics = Object.values(contadorClics);
+
+      new Chart(document.getElementById('graficaClics'), {
+        type: 'doughnut',
+        data: {
+          labels: etiquetas,
+          datasets: [{
+            label: 'Clics',
+            data: datosClics,
+            backgroundColor: etiquetas.map(() => '#b32572')
+          }]
+        }
+      });
+    }
+
+    cargarDashboard();
+  </script>
+</body>
+</html>

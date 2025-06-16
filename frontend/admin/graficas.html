@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gráficas | Perfumarket</title>
+  <link rel="stylesheet" href="../../css/estilos.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket | Admin</div>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cargar_producto.html">Cargar producto</a></li>
+        <li><a href="productos_admin.html">Productos</a></li>
+        <li><a href="../public/home.html">Ver tienda</a></li>
+        <li><a href="../public/login.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main style="padding: 2rem;">
+    <h1>Indicadores de Productos</h1>
+
+    <div style="display:flex; flex-wrap:wrap; gap:1rem; margin: 1rem 0;">
+      <label>Desde: <input type="date" id="fechaInicio"></label>
+      <label>Hasta: <input type="date" id="fechaFin"></label>
+      <label>Categoría:
+        <select id="categoriaFiltro">
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <button onclick="aplicarFiltros()">Aplicar filtros</button>
+    </div>
+
+    <div style="max-width:800px;margin:auto;">
+      <canvas id="graficaVentas" height="200"></canvas>
+      <canvas id="graficaClics" height="200" style="margin-top:3rem;"></canvas>
+    </div>
+  </main>
+
+  <footer>
+    <p>Panel administrativo © 2025 Perfumarket MSK.INC</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    let chartVentas, chartClics;
+
+    async function cargarCategorias() {
+      const { data } = await supabase.from("productos").select("categoria").neq("categoria", "").order("categoria", { ascending: true });
+      const categorias = [...new Set(data.map(p => p.categoria))];
+      const select = document.getElementById("categoriaFiltro");
+      categorias.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+    }
+
+    async function aplicarFiltros() {
+      const fechaInicio = document.getElementById("fechaInicio").value;
+      const fechaFin = document.getElementById("fechaFin").value;
+      const categoria = document.getElementById("categoriaFiltro").value;
+
+      let ventasQuery = supabase.from("ventas_detalle")
+        .select("cantidad, productos(nombre, categoria, creado_en)")
+        .order("creado_en");
+
+      let clicsQuery = supabase.from("productos")
+        .select("nombre, categoria, clicks");
+
+      if (categoria) {
+        ventasQuery = ventasQuery.eq("productos.categoria", categoria);
+        clicsQuery = clicsQuery.eq("categoria", categoria);
+      }
+
+      const { data: ventas } = await ventasQuery;
+      const { data: productos } = await clicsQuery;
+
+      // Agrupar ventas
+      const ventasPorProducto = {};
+      ventas.forEach(v => {
+        const nombre = v.productos?.nombre || "Sin nombre";
+        if (!ventasPorProducto[nombre]) ventasPorProducto[nombre] = 0;
+        ventasPorProducto[nombre] += v.cantidad;
+      });
+
+      const nombresVentas = Object.keys(ventasPorProducto);
+      const datosVentas = Object.values(ventasPorProducto);
+
+      if (chartVentas) chartVentas.destroy();
+      chartVentas = new Chart(document.getElementById("graficaVentas"), {
+        type: "bar",
+        data: {
+          labels: nombresVentas,
+          datasets: [{ label: "Ventas", data: datosVentas }]
+        }
+      });
+
+      const nombresClics = productos.map(p => p.nombre);
+      const datosClics = productos.map(p => p.clicks);
+
+      if (chartClics) chartClics.destroy();
+      chartClics = new Chart(document.getElementById("graficaClics"), {
+        type: "bar",
+        data: {
+          labels: nombresClics,
+          datasets: [{ label: "Clics", data: datosClics }]
+        }
+      });
+    }
+
+    cargarCategorias();
+    aplicarFiltros();
+  </script>
+</body>
+</html>

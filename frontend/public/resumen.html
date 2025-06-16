@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resumen de compra | Perfumarket</title>
+  <link rel="stylesheet" href="../css/estilos.css" />
+  <style>
+    .resumen-container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .resumen-container h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .resumen-container table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    .resumen-container table td,
+    .resumen-container table th {
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    .resumen-container .total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .btn-descargar {
+      display: block;
+      margin: auto;
+      padding: 0.7rem 1.5rem;
+      background-color: #b32572;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="resumen-container" id="resumenCompra">
+      <h2>Resumen de Compra</h2>
+      <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+      <p><strong>Usuario:</strong> <span id="usuario"></span></p>
+
+      <table id="tablaResumen">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Productos cargados aquí -->
+        </tbody>
+      </table>
+
+      <p class="total">Total: $<span id="totalCompra">0.00</span></p>
+      <button class="btn-descargar" onclick="descargarPDF()">Descargar comprobante PDF</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Perfumarket. Todos los derechos reservados.</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    import html2pdf from 'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    document.getElementById('fecha').textContent = new Date().toLocaleString();
+
+    async function cargarResumen() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return alert("Inicia sesión para ver tu resumen");
+
+      const usuario_id = session.user.id;
+      document.getElementById('usuario').textContent = session.user.email;
+
+      // 1. Buscar última venta
+      const { data: venta } = await supabase
+        .from('ventas')
+        .select('id, total')
+        .eq('usuario_id', usuario_id)
+        .order('creado_en', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!venta) {
+        document.querySelector("#tablaResumen tbody").innerHTML = "<tr><td colspan='3'>No hay compras recientes.</td></tr>";
+        return;
+      }
+
+      // 2. Buscar detalles de esa venta
+      const { data: detalles } = await supabase
+        .from('ventas_detalle')
+        .select('cantidad, precio_unitario, productos(nombre)')
+        .eq('venta_id', venta.id);
+
+      const cuerpo = document.querySelector("#tablaResumen tbody");
+      let total = 0;
+      cuerpo.innerHTML = "";
+
+      detalles.forEach(d => {
+        const fila = `
+          <tr>
+            <td>${d.productos?.nombre || 'Producto'}</td>
+            <td>${d.cantidad}</td>
+            <td>$${d.precio_unitario.toFixed(2)}</td>
+          </tr>
+        `;
+        total += d.cantidad * d.precio_unitario;
+        cuerpo.innerHTML += fila;
+      });
+
+      document.getElementById('totalCompra').textContent = total.toFixed(2);
+    }
+
+    function descargarPDF() {
+      const elemento = document.getElementById("resumenCompra");
+      html2pdf().from(elemento).save("resumen_compra.pdf");
+    }
+
+    cargarResumen();
+  </script>
+</body>
+</html>

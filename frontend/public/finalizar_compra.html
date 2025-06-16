@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finalizar Compra | Perfumarket</title>
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket</div>
+    <nav>
+      <ul>
+        <li><a href="home.html">Inicio</a></li>
+        <li><a href="carrito.html">Carrito</a></li>
+        <li><a href="login.html">Salir</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="checkout">
+    <h1>Finalizar compra</h1>
+
+    <form id="form-envio">
+      <input type="text" id="nombre" placeholder="Nombre completo" required />
+      <input type="text" id="direccion" placeholder="Dirección completa" required />
+      <input type="text" id="ciudad" placeholder="Ciudad" required />
+      <input type="text" id="estado" placeholder="Estado" required />
+      <input type="text" id="codigo_postal" placeholder="Código Postal" required />
+      <input type="text" id="telefono" placeholder="Teléfono de contacto" required />
+      <textarea id="notas" placeholder="Notas adicionales (opcional)"></textarea>
+      <button type="submit">Confirmar y generar pedido</button>
+    </form>
+
+    <p id="mensaje" class="mensaje"></p>
+  </main>
+
+  <footer>
+    <p>© 2025 Perfumarket. Todos los derechos reservados.</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    const form = document.getElementById("form-envio");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      mensaje.textContent = "Procesando pedido...";
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        mensaje.textContent = "Debes iniciar sesión.";
+        return;
+      }
+
+      const usuario_id = session.user.id;
+
+      // 1. Obtener productos del carrito con precios
+      const { data: carrito, error: errorCarrito } = await supabase
+        .from("carrito")
+        .select("producto_id, cantidad, productos(precio)")
+        .eq("usuario_id", usuario_id);
+
+      if (errorCarrito || !carrito || carrito.length === 0) {
+        mensaje.textContent = "Error o carrito vacío.";
+        return;
+      }
+
+      // 2. Calcular total
+      let total = 0;
+      const detalles = carrito.map(item => {
+        total += item.cantidad * item.productos.precio;
+        return {
+          producto_id: item.producto_id,
+          cantidad: item.cantidad,
+          precio_unitario: item.productos.precio
+        };
+      });
+
+      // 3. Registrar venta
+      const { data: venta, error: errorVenta } = await supabase
+        .from("ventas")
+        .insert([{ usuario_id, total }])
+        .select()
+        .single();
+
+      if (errorVenta) {
+        console.error(errorVenta);
+        mensaje.textContent = "Error al registrar la venta.";
+        return;
+      }
+
+      const venta_id = venta.id;
+
+      // 4. Registrar cada detalle
+      const detalleInsert = detalles.map(d => ({ ...d, venta_id }));
+      const { error: errorDetalle } = await supabase
+        .from("ventas_detalle")
+        .insert(detalleInsert);
+
+      if (errorDetalle) {
+        console.error(errorDetalle);
+        mensaje.textContent = "Error al guardar productos.";
+        return;
+      }
+
+      // 5. Registrar dirección de envío
+      const envio = {
+        usuario_id,
+        venta_id,
+        nombre_completo: document.getElementById("nombre").value,
+        direccion: document.getElementById("direccion").value,
+        ciudad: document.getElementById("ciudad").value,
+        estado: document.getElementById("estado").value,
+        codigo_postal: document.getElementById("codigo_postal").value,
+        telefono: document.getElementById("telefono").value,
+        notas: document.getElementById("notas").value
+      };
+
+      const { error: errorEnvio } = await supabase.from("envios").insert([envio]);
+      if (errorEnvio) {
+        console.error(errorEnvio);
+        mensaje.textContent = "Error al guardar dirección de envío.";
+        return;
+      }
+
+      // 6. Limpiar carrito
+      await supabase.from("carrito").delete().eq("usuario_id", usuario_id);
+
+      mensaje.textContent = "✅ Pedido registrado correctamente. Redirigiendo...";
+      setTimeout(() => window.location.href = "resumen.html", 2000);
+    });
+  </script>
+</body>
+</html>

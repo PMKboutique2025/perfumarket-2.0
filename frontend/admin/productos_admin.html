@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Administrar Productos | Perfumarket</title>
+  <link rel="stylesheet" href="../../css/estilos.css" />
+  <style>
+    .tabla-productos {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    .tabla-productos th, .tabla-productos td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    .tabla-productos th {
+      background-color: #f2f2f2;
+    }
+    .acciones button {
+      margin-right: 0.5rem;
+    }
+    .filtro-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .filtro-container input {
+      padding: 0.5rem;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket | Admin</div>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cargar_producto.html">Cargar producto</a></li>
+        <li><a href="productos_admin.html" class="activo">Productos</a></li>
+        <li><a href="../public/home.html">Ver tienda</a></li>
+        <li><a href="../public/login.html">Cerrar sesión</a></li>
+
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Gestión de productos</h1>
+
+    <div class="filtro-container">
+      <input type="text" id="filtroNombre" placeholder="Buscar por nombre" />
+      <input type="text" id="filtroCategoria" placeholder="Categoría" />
+      <input type="text" id="filtroGenero" placeholder="Género" />
+      <button onclick="filtrar()">Filtrar</button>
+      <button onclick="resetear()">Reset</button>
+    </div>
+
+    <table class="tabla-productos" id="tablaProductos">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Género</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Promoción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <footer>
+    <p>Panel administrativo © 2025 Perfumarket  MSK.INC</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    let productosOriginales = [];
+
+    async function cargarProductos() {
+      const { data, error } = await supabase
+        .from("productos")
+        .select("*")
+        .order("creado_en", { ascending: false });
+
+      if (error) return alert("Error al cargar productos");
+
+      productosOriginales = data;
+      renderizarTabla(data);
+    }
+
+    function renderizarTabla(lista) {
+      const cuerpo = document.querySelector("#tablaProductos tbody");
+      cuerpo.innerHTML = "";
+
+      lista.forEach(p => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td contenteditable="true" onBlur="editarCampo(${p.id}, 'nombre', this.textContent)">${p.nombre}</td>
+          <td contenteditable="true" onBlur="editarCampo(${p.id}, 'categoria', this.textContent)">${p.categoria}</td>
+          <td contenteditable="true" onBlur="editarCampo(${p.id}, 'genero', this.textContent)">${p.genero}</td>
+          <td contenteditable="true" onBlur="editarCampo(${p.id}, 'precio', this.textContent)">${p.precio}</td>
+          <td contenteditable="true" onBlur="editarCampo(${p.id}, 'stock', this.textContent)">${p.stock}</td>
+          <td>
+            <input type="checkbox" ${p.promocion ? "checked" : ""} onchange="actualizarPromocion(${p.id}, this.checked)" />
+          </td>
+          <td class="acciones">
+            <button onclick="eliminarProducto(${p.id})">Eliminar</button>
+          </td>
+        `;
+        cuerpo.appendChild(fila);
+      });
+    }
+
+    async function editarCampo(id, campo, valor) {
+      const { error } = await supabase
+        .from("productos")
+        .update({ [campo]: campo === "precio" || campo === "stock" ? Number(valor) : valor })
+        .eq("id", id);
+      if (error) alert("Error al actualizar campo");
+    }
+
+    async function actualizarPromocion(id, estado) {
+      const { error } = await supabase
+        .from("productos")
+        .update({ promocion: estado })
+        .eq("id", id);
+      if (error) alert("Error al actualizar promoción");
+    }
+
+    async function eliminarProducto(id) {
+      const confirmar = confirm("¿Seguro que deseas eliminar este producto?");
+      if (!confirmar) return;
+
+      const { error } = await supabase
+        .from("productos")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        alert("Error al eliminar producto.");
+      } else {
+        alert("Producto eliminado correctamente.");
+        cargarProductos();
+      }
+    }
+
+    function filtrar() {
+      const nombre = document.getElementById("filtroNombre").value.toLowerCase();
+      const categoria = document.getElementById("filtroCategoria").value.toLowerCase();
+      const genero = document.getElementById("filtroGenero").value.toLowerCase();
+
+      const filtrados = productosOriginales.filter(p => {
+        return (
+          p.nombre.toLowerCase().includes(nombre) &&
+          p.categoria.toLowerCase().includes(categoria) &&
+          p.genero.toLowerCase().includes(genero)
+        );
+      });
+
+      renderizarTabla(filtrados);
+    }
+
+    function resetear() {
+      document.getElementById("filtroNombre").value = "";
+      document.getElementById("filtroCategoria").value = "";
+      document.getElementById("filtroGenero").value = "";
+      renderizarTabla(productosOriginales);
+    }
+
+    cargarProductos();
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi Carrito | Perfumarket</title>
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket</div>
+    <nav>
+      <ul>
+        <li><a href="home.html">Inicio</a></li>
+        <li><a href="carrito.html" class="activo">Mi carrito</a></li>
+        <li><a href="login.html">Salir</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="carrito">
+    <h1>Mi carrito</h1>
+    <div id="contenedor-carrito">
+      <p>Cargando productos...</p>
+    </div>
+    <div id="total-carrito"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Perfumarket. Todos los derechos reservados.</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    const contenedor = document.getElementById("contenedor-carrito");
+    const totalCarrito = document.getElementById("total-carrito");
+
+    async function cargarCarrito() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        contenedor.innerHTML = "<p>Debes iniciar sesión para ver tu carrito.</p>";
+        return;
+      }
+
+      const usuario_id = session.user.id;
+
+      const { data, error } = await supabase
+        .from('carrito')
+        .select(`
+          id,
+          cantidad,
+          productos (
+            nombre,
+            precio,
+            imagen_url
+          )
+        `)
+        .eq('usuario_id', usuario_id);
+
+      if (error || !data || data.length === 0) {
+        contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+        totalCarrito.innerHTML = "";
+        return;
+      }
+
+      contenedor.innerHTML = "";
+      let total = 0;
+
+      data.forEach(item => {
+        const subtotal = item.cantidad * item.productos.precio;
+        total += subtotal;
+
+        const div = document.createElement("div");
+        div.classList.add("item-carrito");
+        div.innerHTML = `
+          <img src="${item.productos.imagen_url}" alt="${item.productos.nombre}" />
+          <div class="info">
+            <h3>${item.productos.nombre}</h3>
+            <p>Precio: $${item.productos.precio}</p>
+            <p>Cantidad: ${item.cantidad}</p>
+            <p>Subtotal: $${subtotal}</p>
+            <button class="eliminar-btn" data-id="${item.id}">Eliminar</button>
+          </div>
+        `;
+        contenedor.appendChild(div);
+      });
+
+      totalCarrito.innerHTML = `<h2>Total: $${total.toFixed(2)}</h2>`;
+
+      document.querySelectorAll(".eliminar-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          await supabase.from('carrito').delete().eq('id', id);
+          cargarCarrito();
+        });
+      });
+    }
+
+    cargarCarrito();
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi Cuenta | Perfumarket</title>
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Perfumarket</div>
+    <nav>
+      <ul>
+        <li><a href="home.html">Inicio</a></li>
+        <li><a href="carrito.html">Carrito</a></li>
+        <li><a href="mi-cuenta.html" class="activo">Mi cuenta</a></li>
+        <li><a href="login.html">Cerrar sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="cuenta">
+    <h1>Historial de Compras</h1>
+    <div id="pedidos-container">
+      <!-- Aquí se mostrarán los pedidos -->
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Perfumarket. Todos los derechos reservados.</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    const contenedor = document.getElementById("pedidos-container");
+
+    async function cargarPedidos() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        contenedor.innerHTML = "<p>Debes iniciar sesión para ver tus compras.</p>";
+        return;
+      }
+
+      const usuario_id = session.user.id;
+
+      const { data: ventas } = await supabase
+        .from('ventas')
+        .select('id, total, creado_en')
+        .eq('usuario_id', usuario_id)
+        .order('creado_en', { ascending: false });
+
+      if (!ventas || ventas.length === 0) {
+        contenedor.innerHTML = "<p>No tienes compras registradas.</p>";
+        return;
+      }
+
+      for (let venta of ventas) {
+        const { data: detalles } = await supabase
+          .from('ventas_detalle')
+          .select('cantidad, productos(nombre, imagen_url)')
+          .eq('venta_id', venta.id);
+
+        const div = document.createElement("div");
+        div.classList.add("pedido");
+
+        div.innerHTML = `
+          <h3>Compra #${venta.id}</h3>
+          <p><strong>Fecha:</strong> ${new Date(venta.creado_en).toLocaleDateString()}</p>
+          <p><strong>Total:</strong> $${venta.total.toFixed(2)}</p>
+          <div class="productos-pedido">
+            ${detalles.map(d => `
+              <div class="item-pedido">
+                <img src="${d.productos.imagen_url}" alt="${d.productos.nombre}" />
+                <span>${d.productos.nombre} x${d.cantidad}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        contenedor.appendChild(div);
+      }
+    }
+
+    cargarPedidos();
+  </script>
+
+  <style>
+    .pedido {
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+
+    .productos-pedido {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .item-pedido {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .item-pedido img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  </style>
+</body>
+</html>

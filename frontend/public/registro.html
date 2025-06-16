@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro | Perfumarket</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+</head>
+<body>
+  <main class="login-container">
+    <div class="login-box">
+      <h1>Crear cuenta</h1>
+      <form id="registro-form">
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">Registrarse</button>
+        <p id="mensaje" class="mensaje"></p>
+        <p><a href="login.html">¿Ya tienes cuenta? Inicia sesión</a></p>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Perfumarket</p>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://lourpqpgiqfyixrvyfuo.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvdXJwcXBnaXFmeWl4cnZ5ZnVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzgwMzIsImV4cCI6MjA2NTUxNDAzMn0.rHjuYs2WX0eBBjpwM5XM0CZ2-JICe3BCKYTn1flnqBY'
+    );
+
+    const form = document.getElementById("registro-form");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombre").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { nombre }
+        }
+      });
+
+      if (error) {
+        mensaje.textContent = "Error: " + error.message;
+        mensaje.style.color = "red";
+      } else {
+        mensaje.textContent = "Registro exitoso. Revisa tu correo para confirmar.";
+        mensaje.style.color = "green";
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
