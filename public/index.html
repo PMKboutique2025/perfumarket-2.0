@@ -14,7 +14,6 @@
       color: #111;
     }
 
-    /* HEADER CON LOGO */
     .main-header {
       display: flex;
       flex-direction: column;
@@ -38,7 +37,6 @@
       margin: 0;
     }
 
-    /* CATEGORÍAS DESTACADAS */
     .categorias {
       display: flex;
       justify-content: center;
@@ -106,39 +104,12 @@
         font-size: 2rem;
       }
     }
-
-    /* TEMAS POR CATEGORÍA */
-    body.tema-mujer {
-      background-color: #ffe6f0;
-      color: #b32572;
-    }
-
-    body.tema-hombre {
-      background-color: #1e1e1e;
-      color: #f0f0f0;
-    }
-
-    body.tema-suplementos {
-      background-color: #e6ffe6;
-      color: #14532d;
-    }
-
-    body.tema-hombre .main-header h1,
-    body.tema-hombre .categoria h2 {
-      color: #f0f0f0;
-    }
-
-    body.tema-mujer .categoria h2 {
-      color: #b32572;
-    }
-
-    body.tema-suplementos .categoria h2 {
-      color: #14532d;
-    }
   </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <div id="navbar-container"></div>
+
   <!-- ENCABEZADO CON LOGO -->
   <header class="main-header">
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo">
@@ -168,19 +139,26 @@
     © 2025 Perfumarket. Todos los derechos reservados. MSK.INC
   </footer>
 
-  <!-- SCRIPT PARA APLICAR TEMA POR CATEGORÍA -->
+  <!-- Cargar navbar con ejecución de scripts -->
   <script>
-    const url = new URL(window.location.href);
-    const categoria = url.searchParams.get("categoria");
-    if (categoria) {
-      document.body.classList.add(`tema-${categoria.toLowerCase()}`);
-    }
-  </script>
-<script>
-  fetch('navbar.html')
-    .then(res => res.text())
-    .then(html => document.getElementById('navbar-container').innerHTML = html);
-</script>
+    fetch('navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const container = document.getElementById('navbar-container');
+        container.innerHTML = html;
 
+        // Ejecutar scripts embebidos del navbar
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(script => {
+          const newScript = document.createElement("script");
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
 </body>
 </html>
