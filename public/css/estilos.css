@@ -176,11 +176,20 @@ footer {
 
 .btn-volver {
   display: inline-block;
-  margin-top: 1rem;
+  margin-top: 2rem;
+  font-size: 1rem;
   color: #555;
-  font-size: 0.9rem;
   text-decoration: none;
+  text-align: right;
+  float: right;
+  margin-right: 2rem;
+  transition: color 0.2s ease;
 }
+
+.btn-volver:hover {
+  color: #b32572;
+}
+
 
 .registro-link {
   margin-top: 1rem;
