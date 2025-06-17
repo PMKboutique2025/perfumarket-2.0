@@ -100,14 +100,13 @@
 </head>
 <body>
   <div id="navbar-container"></div>
+
   <header class="main-header">
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo">
     <h1 id="tituloCategoria">Subcategorías</h1>
   </header>
 
-  <section class="grid-subcategorias" id="contenedorSubcategorias">
-    <!-- JS insertará aquí las subcategorías -->
-  </section>
+  <section class="grid-subcategorias" id="contenedorSubcategorias"></section>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -118,32 +117,45 @@
 
     const subcategoriasPorCategoria = {
       mujer: [
-        { nombre: "Ropa", imagen: "https://images.unsplash.com/photo-1618354691310-e5c6a2e8a5bb" },
-        { nombre: "Bolsas", imagen: "https://images.unsplash.com/photo-1616348436168-bc258a949c4b" },
-        { nombre: "Zapatos", imagen: "https://images.unsplash.com/photo-1600180758890-1fb0e55f44e7" },
-        { nombre: "Perfumes", imagen: "https://images.unsplash.com/photo-1629217701541-91eb2b6716a9" }
+        "Vestidos", "Blusas", "Trajes de baño", "Jeans", "Playeras", "Shorts y bermudas",
+        "Faldas", "Ropa interior", "Pijamas",
+        "Crossbody", "Tote", "Carteras", "Backpacks", "Satchel", "Bolsa de mano", "Bowler", "Cangureras",
+        "Sandalias", "Tenis casuales", "Zapatillas", "Confort", "Flats", "Bota y botín", "Alpargatas",
+        "Lentes", "Cinturones", "Sombreros y gorras", "Pashminas y mascadas", "Relojes",
+        "Aretes", "Pulseras", "Collares", "Anillos",
+        "Perfumes y cuidado personal"
       ],
       hombre: [
-        { nombre: "Ropa", imagen: "https://images.unsplash.com/photo-1580234758340-fdfe0c0e2f67" },
-        { nombre: "Zapatos", imagen: "https://images.unsplash.com/photo-1589571894960-20bbe2828c0a" },
-        { nombre: "Accesorios", imagen: "https://images.unsplash.com/photo-1586363146540-4c6715b80d41" },
-        { nombre: "Perfumes", imagen: "https://images.unsplash.com/photo-1600181955080-e009c6be7df0" }
+        "Camisas", "Playeras", "Polos", "Jeans", "Chamarras", "Chalecos", "Ropa interior y camisetas",
+        "Pantalones", "Shorts y bermudas", "Trajes de baño", "Gorras",
+        "Zapatos", "Tenis casuales", "Sandalias", "Botas", "Botines", "Cuidado de calzado",
+        "Perfumes y cuidado personal",
+        "Carteras", "Cinturones", "Corbatas", "Moños y pañuelos", "Gorras y sombreros", "Lentes",
+        "Llaveros y navajas", "Relojes", "Pulseras", "Collares", "Mancuernillas",
+        "Tenis y calzado deportivo", "Playeras deportivas", "Shorts deportivos", "Conjuntos deportivos",
+        "Jerseys", "Sudaderas", "Chamarras", "Chalecos deportivos",
+        "Mochilas deportivas", "Maletas deportivas", "Gorras deportivas"
       ],
-      suplementos: [
-        { nombre: "Proteínas", imagen: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1" },
-        { nombre: "Vitaminas", imagen: "https://images.unsplash.com/photo-1612197525530-6ff5290e7a43" }
-      ]
+      suplementos: ["Proteínas", "Vitaminas"]
+    };
+
+    const imagenesLocales = {
+      "proteínas": "img/proteinas.jpg",
+      "vitaminas": "img/vitaminas.jpg"
     };
 
     if (categoria && subcategoriasPorCategoria[categoria]) {
       titulo.textContent = `Subcategorías de ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
-      subcategoriasPorCategoria[categoria].forEach(sub => {
+      subcategoriasPorCategoria[categoria].forEach(nombre => {
+        const nombreSanitizado = nombre.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, '').replace(/[^\w\s]/g, '').replace(/\s+/g, '');
+        const imagen = imagenesLocales[nombre.toLowerCase()] || `https://source.unsplash.com/600x400/?${encodeURIComponent(nombre)},${categoria}`;
+
         const card = document.createElement('a');
-        card.href = `home.html?categoria=${categoria}&subcat=${sub.nombre.toLowerCase()}`;
+        card.href = `home.html?categoria=${categoria}&subcat=${encodeURIComponent(nombre.toLowerCase())}`;
         card.classList.add('subcat-card');
         card.innerHTML = `
-          <img src="${sub.imagen}" alt="${sub.nombre}">
-          <h3>${sub.nombre}</h3>
+          <img src="${imagen}" alt="${nombre}">
+          <h3>${nombre}</h3>
         `;
         contenedor.appendChild(card);
       });
@@ -151,7 +163,7 @@
       contenedor.innerHTML = "<p style='text-align:center;'>Categoría no válida.</p>";
     }
   </script>
-<!-- Cargar navbar con ejecución de scripts -->
+
   <script>
     fetch('navbar.html')
       .then(res => res.text())
@@ -159,7 +171,6 @@
         const container = document.getElementById('navbar-container');
         container.innerHTML = html;
 
-        // Ejecutar scripts embebidos del navbar
         const scripts = container.querySelectorAll("script");
         scripts.forEach(script => {
           const newScript = document.createElement("script");
@@ -172,9 +183,5 @@
         });
       });
   </script>
-
-
 </body>
-
-
 </html>
