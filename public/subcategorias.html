@@ -135,9 +135,24 @@
     };
 
     const imagenesLocales = {
+      // Mujer
+      "moda femenina": "img/subcategorias/modafem.jpeg",
+      "bolsos": "img/subcategorias/bolsos.jpeg",
+      "calzado": "img/subcategorias/calzadomujer.jpg",
+      "accesorios": "img/subcategorias/acces_mujer.jpg",
+      "perfumes y cuidado personal": "img/subcategorias/cuidadopermujer.jpg",
+
+      // Hombre
+      "moda masculina": "img/subcategorias/modamasc.jpeg",
+      "calzado": "img/subcategorias/calzado masculino.jpg",
+      "accesorios": "img/subcategorias/acces_homb.jpg",
+      "perfumes y cuidado personal": "img/subcategorias/cuidadoperhombre.jpg",
+
+      // Suplementos (ya estaban)
       "proteínas": "img/proteinas.jpg",
       "vitaminas": "img/vitaminas.jpg"
     };
+
 
     if (categoria && subcategoriasPorCategoria[categoria]) {
       titulo.textContent = `Subcategorías de ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
