@@ -69,25 +69,27 @@
       }
     });
   </script>
+  <!-- Cargar navbar con ejecución de scripts -->
   <script>
-  fetch('navbar.html')
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById('navbar-container').innerHTML = html;
+    fetch('navbar.html')
+      .then(res => res.text())
+      .then(html => {
+        const container = document.getElementById('navbar-container');
+        container.innerHTML = html;
 
-      // Usar requestAnimationFrame para asegurar el renderizado
-      requestAnimationFrame(() => {
-        const menuBtn = document.getElementById('menu-toggle');
-        const menu = document.getElementById('side-menu');
-        if (menuBtn && menu) {
-          menuBtn.addEventListener('click', () => {
-            menu.classList.toggle('open');
-            menuBtn.classList.toggle('open'); // para ocultar botón si se desea
-          });
-        }
+        // Ejecutar scripts embebidos del navbar
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(script => {
+          const newScript = document.createElement("script");
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
       });
-    });
-</script>
+  </script>
 
 
 
