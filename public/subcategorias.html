@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Subcategorías | Perfumarket</title>
   <link rel="stylesheet" href="css/estilos.css" />
-  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="icon" type="image/jpg" href="img/favicon.jpg">
   <style>
     body {
       margin: 0;
@@ -154,8 +154,19 @@
 <script>
   fetch('navbar.html')
     .then(res => res.text())
-    .then(html => document.getElementById('navbar-container').innerHTML = html);
+    .then(html => {
+      document.getElementById('navbar-container').innerHTML = html;
+      // Esperar al renderizado antes de asignar funcionalidad
+      setTimeout(() => {
+        const menuBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('side-menu');
+        menuBtn.addEventListener('click', () => {
+          menu.classList.toggle('open');
+        });
+      }, 100);
+    });
 </script>
+
 </body>
 
 

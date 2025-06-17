@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Perfumarket - Catálogo</title>
   <link rel="stylesheet" href="css/estilos.css" />
-  <link rel="shortcut icon" href="img/favicon.png" type="image/png" />
+  <link rel="shortcut icon" href="img/favicon.jpg" type="image/jpg" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -117,7 +117,7 @@
   <div id="navbar-container"></div>
   <header>
     <img src="img/PMK_transparente.png" alt="Perfumarket Logo" />
-    <a href="index.html" class="btn-volver">← Volver al inicio</a>
+   
   </header>
 
   <main>
@@ -188,8 +188,19 @@
   <script>
   fetch('navbar.html')
     .then(res => res.text())
-    .then(html => document.getElementById('navbar-container').innerHTML = html);
+    .then(html => {
+      document.getElementById('navbar-container').innerHTML = html;
+      // Esperar al renderizado antes de asignar funcionalidad
+      setTimeout(() => {
+        const menuBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('side-menu');
+        menuBtn.addEventListener('click', () => {
+          menu.classList.toggle('open');
+        });
+      }, 100);
+    });
 </script>
+
 
 </body>
 </html>

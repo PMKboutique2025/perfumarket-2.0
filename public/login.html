@@ -71,8 +71,19 @@
   <script>
   fetch('navbar.html')
     .then(res => res.text())
-    .then(html => document.getElementById('navbar-container').innerHTML = html);
+    .then(html => {
+      document.getElementById('navbar-container').innerHTML = html;
+      // Esperar al renderizado antes de asignar funcionalidad
+      setTimeout(() => {
+        const menuBtn = document.getElementById('menu-toggle');
+        const menu = document.getElementById('side-menu');
+        menuBtn.addEventListener('click', () => {
+          menu.classList.toggle('open');
+        });
+      }, 100);
+    });
 </script>
+
 
 </body>
 </html>
