@@ -73,16 +73,21 @@
     .then(res => res.text())
     .then(html => {
       document.getElementById('navbar-container').innerHTML = html;
-      // Esperar al renderizado antes de asignar funcionalidad
-      setTimeout(() => {
+
+      // Usar requestAnimationFrame para asegurar el renderizado
+      requestAnimationFrame(() => {
         const menuBtn = document.getElementById('menu-toggle');
         const menu = document.getElementById('side-menu');
-        menuBtn.addEventListener('click', () => {
-          menu.classList.toggle('open');
-        });
-      }, 100);
+        if (menuBtn && menu) {
+          menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('open');
+            menuBtn.classList.toggle('open'); // para ocultar botón si se desea
+          });
+        }
+      });
     });
 </script>
+
 
 
 </body>
