@@ -96,6 +96,38 @@
         font-size: 1.5rem;
       }
     }
+  
+    body.cat-hombre {
+      background-color: #0f0f0f;
+      color: #ffffff;
+    }
+
+    body.cat-hombre .subcat-card h3 {
+      color: #00bcd4;
+    }
+
+    body.cat-hombre .subcat-card img {
+      filter: brightness(0.65);
+    }
+
+    body.cat-mujer {
+      background-color: #fff0f6;
+      color: #b32572;
+    }
+
+    body.cat-mujer .subcat-card h3 {
+      color: #b32572;
+    }
+
+    body.cat-suplementos {
+      background-color: #f3fff1;
+      color: #1c4c20;
+    }
+
+    body.cat-suplementos .subcat-card h3 {
+      color: #3d8653;
+    }
+
   </style>
 </head>
 <body>
@@ -111,6 +143,10 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const categoria = urlParams.get('categoria')?.toLowerCase();
+    if (categoria) {
+      document.body.classList.add(`cat-${categoria}`);
+    }
+
 
     const contenedor = document.getElementById("contenedorSubcategorias");
     const titulo = document.getElementById("tituloCategoria");
@@ -119,15 +155,15 @@
       mujer: [
         "Moda Femenina",
         "Bolsos",
-        "Calzadom",
-        "Accesoriosm",
-        "Perfumes y Cuidado personalm"
+        "Calzado Dama",
+        "Accesorios Dama",
+        "Perfumes y Cuidado personal Dama"
       ],
       hombre: [
         "Moda Masculina",
-        "Calzadoh",
-        "Accesoriosh",
-        "Perfumes y cuidado personalh",
+        "Calzado Caballero",
+        "Accesorios Caballero",
+        "Perfumes y cuidado personal Caballero",
         
       ],
 
@@ -138,15 +174,15 @@
       // Mujer
       "moda femenina": "img/subcategorias/modafem.jpeg",
       "bolsos": "img/subcategorias/bolsos.jpeg",
-      "calzadom": "img/subcategorias/calzadomujer.jpg",
-      "accesoriosm": "img/subcategorias/acces_mujer.jpg",
-      "perfumes y cuidado personalm": "img/subcategorias/cuidadopermujer.jpg",
+      "calzado Dama": "img/subcategorias/calzadomujer.jpg",
+      "accesorios Dama": "img/subcategorias/acces_mujer.jpg",
+      "perfumes y cuidado personal Dama": "img/subcategorias/cuidadopermujer.jpg",
 
       // Hombre
       "moda masculina": "img/subcategorias/modamasc.jpeg",
-      "calzadoh": "img/subcategorias/calzado masculino.jpg",
-      "accesoriosh": "img/subcategorias/acces_homb.jpg",
-      "perfumes y cuidado personalh": "img/subcategorias/cuidadoperhombre.jpg",
+      "calzado Caballero": "img/subcategorias/calzado masculino.jpg",
+      "accesorios Caballero": "img/subcategorias/acces_homb.jpg",
+      "perfumes y cuidado personal Caballero": "img/subcategorias/cuidadoperhombre.jpg",
 
       // Suplementos (ya estaban)
       "proteínas": "img/proteinas.jpg",
