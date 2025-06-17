@@ -1,12 +1,11 @@
 <!-- navbar.html -->
 <style>
-  /* Estilos base */
   .navbar-hamburguesa {
     position: fixed;
     top: 1rem;
     left: 1rem;
     z-index: 999;
-    font-size: 2rem;
+    font-size: 1.6rem; /* reducido */
     cursor: pointer;
     background: transparent;
     border: none;
@@ -16,24 +15,34 @@
   .menu-lateral {
     position: fixed;
     top: 0;
-    left: -250px;
-    width: 250px;
+    left: -260px;
+    width: 260px;
     height: 100vh;
     background-color: #fff;
     box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     z-index: 998;
     transition: left 0.3s ease;
-    padding: 2rem 1rem;
+    padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.2rem;
+  }
+
+  .menu-lateral.abierto {
+    left: 0;
+  }
+
+  .menu-lateral .logo-menu {
+    width: 125px; /* Aumentado 25% */
+    margin-bottom: 1rem;
+    align-self: center;
   }
 
   .menu-lateral a {
     text-decoration: none;
     color: #111;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 1.15rem;
+    font-weight: 600;
     transition: color 0.2s ease;
   }
 
@@ -41,48 +50,39 @@
     color: #b32572;
   }
 
-  .menu-abierto {
-    left: 0 !important;
-  }
-
-  .menu-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.3);
-    z-index: 997;
-  }
-
-  .menu-overlay.activo {
-    display: block;
+  @media (max-width: 768px) {
+    .menu-lateral {
+      padding: 1.5rem 1rem;
+      gap: 1rem;
+    }
   }
 </style>
 
-<!-- Botón hamburguesa -->
-<button class="navbar-hamburguesa" onclick="abrirMenu()">
-  ☰
-</button>
+<button class="navbar-hamburguesa" id="abrir-menu">☰</button>
 
-<!-- Menú lateral -->
-<nav id="menuLateral" class="menu-lateral">
+<nav class="menu-lateral" id="menu-lateral">
+  <img src="img/PMK_transparente.png" alt="Logo Perfumarket" class="logo-menu">
+  <a href="index.html">Inicio</a>
   <a href="subcategorias.html?categoria=mujer">Mujer</a>
   <a href="subcategorias.html?categoria=hombre">Hombre</a>
   <a href="subcategorias.html?categoria=suplementos">Suplementos</a>
+  <a href="home.html">Ver Todo</a>
 </nav>
 
-<!-- Overlay -->
-<div id="menuOverlay" class="menu-overlay" onclick="cerrarMenu()"></div>
-
-<!-- Script para abrir/cerrar -->
 <script>
-  function abrirMenu() {
-    document.getElementById('menuLateral').classList.add('menu-abierto');
-    document.getElementById('menuOverlay').classList.add('activo');
-  }
+  const menu = document.getElementById('menu-lateral');
+  const btn = document.getElementById('abrir-menu');
 
-  function cerrarMenu() {
-    document.getElementById('menuLateral').classList.remove('menu-abierto');
-    document.getElementById('menuOverlay').classList.remove('activo');
-  }
+  btn.addEventListener('click', () => {
+    menu.classList.toggle('abierto');
+    btn.style.display = menu.classList.contains('abierto') ? 'none' : 'block';
+  });
+
+  // Cerrar menú si se hace clic fuera
+  document.addEventListener('click', e => {
+    if (!menu.contains(e.target) && e.target !== btn && menu.classList.contains('abierto')) {
+      menu.classList.remove('abierto');
+      btn.style.display = 'block';
+    }
+  });
 </script>
